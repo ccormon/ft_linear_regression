@@ -1,19 +1,17 @@
 import pandas
+import theta
 
 
-def estimate_price(mileage):
+def estimate_price(mileage: int, theta0: float, theta1: float) -> float | None:
     try:
-        theta = pandas.read_csv("theta.csv")
-        theta0 = theta.iloc[0, 0]
-        theta1 = theta.iloc[0, 1]
-        return theta0 + theta1 * mileage
+        return theta.theta0 + theta.theta1 * mileage
     except Exception as err:
         print(f"Error: {err}")
 
 
 def main():
     mileage = input("Enter a mileage: ")
-    print(estimate_price(int(mileage)))
+    print(estimate_price(int(mileage), theta.theta0, theta.theta1))
 
 
 if __name__ == "__main__":

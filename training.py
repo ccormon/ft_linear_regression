@@ -1,34 +1,36 @@
 import pandas
 import numpy
-import matplotlib.pyplot as plt
-from estimate_price import estimate_price
+import theta
 
 
 KM = "km"
 PRICE = "price"
-LEARNING_RATE = 0.001
+LEARNING_RATE = 0.01
+
+
+def standardize(feature: numpy.ndarray) -> tuple[numpy.ndarray, float, float]:
+    """Standardize each values from the feature."""
+    mean = feature.mean()
+    std = feature.std()
+    return (feature - mean) / std, mean, std
+
+
+def gradient_descent(km: numpy.ndarray, price: numpy.ndarray, theta0: int = 0, theta1: int = 0) -> tuple[float, float]:
+    for i in range(1000):
+        predicted_price = theta0 + theta1 * km
+        theta0 -= LEARNING_RATE * (predicted_price - price).mean()
+        theta1 -= LEARNING_RATE * ((predicted_price - price) * km).mean()
+    return theta0, theta1
 
 
 def main():
     data = pandas.read_csv("data.csv")
-    print(data.shape[0])
-    tmp_theta0 = LEARNING_RATE * (estimate_price(data[KM]) - data[PRICE]).sum() / data.shape[0]
-    tmp_theta1 = LEARNING_RATE * ((estimate_price(data[KM]) - data[PRICE]) * data[KM]).sum() / data.shape[0]
-    print(tmp_theta0)
-    print(tmp_theta1)
-
-
-# def main():
-#     data = pandas.read_csv("data.csv")
-#     a = ((data[KM] * data[PRICE]).mean() - data[KM].mean() * data[PRICE].mean())/((data[KM]**2).mean() - data[KM].mean()**2)
-#     b = data[PRICE].mean() - a * data[KM].mean()
-#     x = numpy.array(range(0, 240001, 1000))
-#     y = a * x + b
-#     fig, ax = plt.subplots()
-#     ax.plot(x, y, label=f"y = {a:.2f}x + {b:.2f}", color="red")
-#     data.plot(kind="scatter", x=KM, y=PRICE, ax=ax, label="data")
-#     plt.legend()
-#     plt.show()
+    km, price = data[KM].values, data[PRICE].values
+    km_scaled, km_mean, km_std = standardize(km)
+    price_scaled, price_mean, price_std = standardize(price)
+    theta0_scaled, theta1_scaled = gradient_descent(km_scaled, price_scaled)
+    theta.theta1 = theta1_scaled * price_std / km_std
+    theta.theta0 = price_std * theta0_scaled - theta.theta1 * km_mean + price_mean
 
 
 if __name__ == "__main__":
