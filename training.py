@@ -24,8 +24,8 @@ def gradient_descent(
     theta1: float = 0
 ) -> tuple[float, float]:
     """This function apply a gradient descent algorithm to find an accepteble \
-linear regression line equation and returns the slope and the y-intercept of \
-the equation."""
+linear regression line equation and returns the slope, the y-intercept of \
+the equation and the precision of the algorithm."""
     if not isinstance(km, numpy.ndarray):
         raise ValueError("km must be a numpy's array.")
     if km.ndim != 1:
